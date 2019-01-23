@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS build
+FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /app
 COPY PlatformBenchmarks .
 RUN dotnet publish -c Release -o out
@@ -12,6 +12,9 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y mono-devel && \ 
     rm -rf /var/lib/apt/lists/*
+
+RUN mono --aot /usr/lib/mono/4.5/mscorlib.dll
+RUN for i in /usr/lib/mono/gac/*/*/*.dll; do mono --aot $i; done
 
 ENV ASPNETCORE_URLS http://+:8080
 ENV KestrelTransport Libuv
